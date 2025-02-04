@@ -19,6 +19,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,6 +70,12 @@ class TelemetryServiceImpTest {
 
     @Test
     void getAllTelemetry() {
+        List<Telemetry>telemetries=new ArrayList<>();
+        telemetries.add(telemetry);
+        Mockito.when(telemetryRepository.findAll()).thenReturn(telemetries);
+        Mockito.when(modelMapper.map(telemetries, TelemetryInfoDto.class)).thenReturn(telemetryInfoDto);
+        List<TelemetryInfoDto>telemetryInfoDtos=telemetryServiceImp.getAllTelemetry();
+        Assertions.assertEquals(1,telemetryInfoDtos.size());
     }
 
     @Test
