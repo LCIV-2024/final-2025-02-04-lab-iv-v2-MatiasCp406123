@@ -1,5 +1,6 @@
 package ar.edu.utn.frc.tup.lciii.service.imp;
 
+import ar.edu.utn.frc.tup.lciii.Client.ClientRest;
 import ar.edu.utn.frc.tup.lciii.dtos.common.DeviceDto;
 import ar.edu.utn.frc.tup.lciii.dtos.common.DeviceInfoDto;
 import ar.edu.utn.frc.tup.lciii.model.Device;
@@ -14,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class DeviceSeviceImp implements DeviceService {
@@ -24,7 +24,7 @@ public class DeviceSeviceImp implements DeviceService {
     @Autowired
     private DeviceRepository deviceRepository;
     @Autowired
-    private RestTemplate restTemplate;
+    private ClientRest clientRest;
     @Override
     public HttpStatus postDevice(DeviceDto deviceDto) {
         Optional<Device> deviceOptional=deviceRepository.getDeviceByHostName(deviceDto.getHostName());
@@ -56,6 +56,15 @@ public class DeviceSeviceImp implements DeviceService {
 
     @Override
     public HttpStatus postRest() {
-        return null;
+        DeviceInfoDto[]deviceInfoDtoList=clientRest.deviceAll().getBody();
+        Arrays.stream(deviceInfoDtoList).sorted();
+        for(DeviceInfoDto dev :deviceInfoDtoList) {
+            for (int i = 0; i < 5; i++) {
+                Device device=modelMapper.map(dev, Device.class);
+                deviceRepository.save(device);
+
+            }
+        }
+        return HttpStatus.CREATED;
     }
 }

@@ -23,6 +23,11 @@ public class DeviceController {
     public ResponseEntity<HttpStatus>postDevice(@RequestBody DeviceDto deviceDto){
         return ResponseEntity.ok(deviceService.postDevice(deviceDto));
     }
+    @PostMapping("/api/save-consumed-devices")
+    public ResponseEntity<HttpStatus>postDeviceRest(){
+        return ResponseEntity.ok(deviceService.postRest());
+    }
+
 
     @GetMapping("/api/device")
     public ResponseEntity<List<DeviceInfoDto>>getAllByType(@RequestParam(required = false)DeviceType type,@RequestParam(required = false) Double lowThreshold,@RequestParam(required = false) Double upThreshold){
