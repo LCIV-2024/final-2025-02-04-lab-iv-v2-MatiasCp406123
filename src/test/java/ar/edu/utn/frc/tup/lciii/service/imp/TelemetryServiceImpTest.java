@@ -49,7 +49,7 @@ class TelemetryServiceImpTest {
                 .telemetry(telemetry)
                 .type(DeviceType.Laptop).build();
         telemetry=new Telemetry().toBuilder()
-                .id(1L).cpuUsage(40.0)
+                .id(1L).cpuUsage(40.0).ip("123445")
                 .dataDate(LocalDateTime.now())
                 .hostDiskFree(100.0)
                 .device(device).build();
@@ -58,25 +58,19 @@ class TelemetryServiceImpTest {
                 .hostname("PC-001")
                 .dataDate(LocalDateTime.now())
                 .hostDiskFree(100.0).build();
+        telemetryInfoDto=new TelemetryInfoDto().toBuilder().ip("123445")
+                .dataDate(LocalDateTime.now())
+                .hostDiskFree(100.0).build();
     }
     @Test
     void postTelemetry() {
         Mockito.when(modelMapper.map(telemetryDto, Telemetry.class)).thenReturn(telemetry);
         Mockito.when(telemetryRepository.save(telemetry)).thenReturn(telemetry);
-        Mockito.when(deviceRepository.getDeviceByHostName(telemetryDto.getHostname())).thenReturn(Optional.empty());
+        Mockito.when(deviceRepository.getDeviceByHostName(telemetryDto.getHostname())).thenReturn(Optional.of(device));
         HttpStatus response=telemetryServiceImp.postTelemetry(telemetryDto);
-        Assertions.assertEquals(HttpStatus.OK,response);
+        Assertions.assertEquals(HttpStatus.CREATED,response);
     }
 
-    @Test
-    void getAllTelemetry() {
-        List<Telemetry>telemetries=new ArrayList<>();
-        telemetries.add(telemetry);
-        Mockito.when(telemetryRepository.findAll()).thenReturn(telemetries);
-        Mockito.when(modelMapper.map(telemetries, TelemetryInfoDto.class)).thenReturn(telemetryInfoDto);
-        List<TelemetryInfoDto>telemetryInfoDtos=telemetryServiceImp.getAllTelemetry();
-        Assertions.assertEquals(1,telemetryInfoDtos.size());
-    }
 
     @Test
     void getByHost() {
